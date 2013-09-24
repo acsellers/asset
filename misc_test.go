@@ -14,3 +14,10 @@ func TestCleanExts(t *testing.T) {
 		test.AreEqual("one", cleanExts("one.css"))
 	})
 }
+
+func TestCleanName(t *testing.T) {
+	assert.Within(t, func(test *assert.Test) {
+		test.AreEqual("one.css", cleanName("one.asset.css"))
+		test.AreEqual("one.js", cleanName("one.asset.js"))
+	})
+}
