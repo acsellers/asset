@@ -1,15 +1,16 @@
 package asset
 
 import (
-	"html/template"
 	"text/template/parse"
 )
 
 var (
-	developmentCssAssets = make(map[string]template.CSS)
-	productionCssAssets  = make(map[string]template.CSS)
+	developmentCssAssets = make(map[string]string)
+	productionCssAssets  = make(map[string]string)
 
-	developmentJsAssets = make(map[string]template.JS)
-	productionJsAssets  = make(map[string]template.JS)
-	cachedAssetList     = make(map[string]*parse.TextNode)
+	developmentJsAssets = make(map[string]string)
+	productionJsAssets  = make(map[string]string)
+
+	cachedAssetList = make(map[string]*parse.TextNode)
+	finishedAssets  = make(map[string]bool)
 )
