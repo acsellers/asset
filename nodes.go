@@ -101,7 +101,47 @@ func newTreeNode(ct, s string) *parse.ActionNode {
 }
 
 func newDirectoryNode(ct, s string) *parse.ActionNode {
-	return &parse.ActionNode{}
+	funcName := "assetDir"
+	stringNodes := []parse.Node{
+		&parse.StringNode{
+			NodeType: parse.NodeString,
+			Quoted:   ct,
+			Text:     ct,
+		},
+		&parse.StringNode{
+			NodeType: parse.NodeString,
+			Quoted:   s,
+			Text:     s,
+		},
+	}
+	switch ct {
+	case "js":
+		funcName = "assetJsDir"
+		stringNodes = stringNodes[1:]
+	case "css":
+		funcName = "assetCssDir"
+		stringNodes = stringNodes[1:]
+	}
+	nodes := []parse.Node{
+		&parse.IdentifierNode{
+			NodeType: parse.NodeIdentifier,
+			Ident:    funcName,
+		},
+	}
+
+	return &parse.ActionNode{
+		NodeType: parse.NodeAction,
+		Pipe: &parse.PipeNode{
+			NodeType: parse.NodePipe,
+			Cmds: []*parse.CommandNode{
+				&parse.CommandNode{
+					NodeType: parse.NodeCommand,
+					Args:     append(nodes, stringNodes...),
+				},
+			},
+		},
+	}
+
 }
 
 func newItemNode(ct, s string) *parse.ActionNode {

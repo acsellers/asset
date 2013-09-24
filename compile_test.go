@@ -43,6 +43,36 @@ func newTemplate() (*template.Template, map[string]string) {
 			}
 			return template.JS(output)
 		},
+		"assetDir": func(t, n string) template.HTML {
+			var output string
+			prefix := t + ":" + n + "/"
+			for name, asset := range assets {
+				if strings.HasPrefix(name, prefix) && !strings.Contains(name[len(prefix):], "/") {
+					output += asset
+				}
+			}
+			return template.HTML(output)
+		},
+		"assetJsDir": func(n string) template.CSS {
+			var output string
+			prefix := "js:" + n + "/"
+			for name, asset := range assets {
+				if strings.HasPrefix(name, prefix) && !strings.Contains(name[len(prefix):], "/") {
+					output += asset
+				}
+			}
+			return template.CSS(output)
+		},
+		"assetCssDir": func(n string) template.JS {
+			var output string
+			prefix := "css:" + n + "/"
+			for name, asset := range assets {
+				if strings.HasPrefix(name, prefix) && !strings.Contains(name[len(prefix):], "/") {
+					output += asset
+				}
+			}
+			return template.JS(output)
+		},
 	}), assets
 }
 
@@ -101,6 +131,28 @@ func TestCompile4(t *testing.T) {
 		tmpl, assets := newTemplate()
 		assets[":test/one"] = "h1 { color: #afafaf }"
 		assets[":test/two"] = "h2 { color: #afafaf }"
+		assets[":test/two/three"] = "h3 { color: #afafaf }"
+		b := new(bytes.Buffer)
+		tree := compileSheet("compile", reqs, content)
+		tmpl.AddParseTree("compile", tree)
+		test.IsNil(tmpl.ExecuteTemplate(b, "compile", nil))
+		test.AreEqual(
+			"h1 { color: #afafaf }h2 { color: #afafaf }h3 { color: #afafaf }.name {\ncolor: #ffffff;\n}",
+			b.String(),
+		)
+	})
+}
+
+func TestCompile5(t *testing.T) {
+	assert.Within(t, func(test *assert.Test) {
+		reqs, content := parseSheet("//= require_directory 'test'\n.name {\ncolor: #ffffff;\n}")
+		test.AreEqual(1, len(reqs))
+		test.AreEqual(3, len(content))
+
+		tmpl, assets := newTemplate()
+		assets[":test/one"] = "h1 { color: #afafaf }"
+		assets[":test/two"] = "h2 { color: #afafaf }"
+		assets[":test/two/three"] = "h3 { color: #afafaf }"
 		b := new(bytes.Buffer)
 		tree := compileSheet("compile", reqs, content)
 		tmpl.AddParseTree("compile", tree)
