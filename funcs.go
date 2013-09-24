@@ -2,6 +2,7 @@ package asset
 
 import (
 	"html/template"
+	"path"
 	"strings"
 )
 
@@ -196,5 +197,22 @@ var RequiredFuncs = template.FuncMap{
 }
 
 func cleanExts(s string) string {
+	cleaning := true
+	extensions := []string{
+		".js", ".ts", ".coffee", ".cs", ".dart",
+		".css", ".scss", ".sass", ".less",
+		".min",
+	}
+	for cleaning {
+		ext := path.Ext(s)
+		found := false
+		for _, recognized := range extensions {
+			if ext == recognized {
+				s = s[:len(s)-len(ext)]
+				found = true
+			}
+		}
+		cleaning = found
+	}
 	return s
 }
