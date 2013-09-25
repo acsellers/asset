@@ -33,9 +33,9 @@ func compileSheet(name string, reqs []*require, content []string) *parse.Tree {
 
 func contentTypeFor(s string) string {
 	switch path.Ext(s) {
-	case "js", "coffee", "dart", "ts":
+	case ".js", ".coffee", ".dart", ".ts", ".cs":
 		return "js"
-	case "css", "sass", "scss", "less":
+	case ".css", ".sass", ".scss", ".less":
 		return "css"
 	}
 	return ""
